@@ -1,1 +1,125 @@
-hi hi hi
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
+public class AES {
+    public static void main(String[] args) throws Exception {
+        String plainText = "Hello, AES!";
+        
+        // Generate a AES key
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+        SecretKey secretKey = keyGen.generateKey();
+
+        // Encrypt the plaintext
+        String encryptedText = encrypt(plainText, secretKey);
+        System.out.println("Encrypted Text: " + encryptedText);
+
+        // Decrypt the ciphertext
+        String decryptedText = decrypt(encryptedText, secretKey);
+        System.out.println("Decrypted Text: " + decryptedText);
+    }
+    // Method to encrypt text
+    public static String encrypt(String plainText, SecretKey secretKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
+    // Method to decrypt text
+    public static String decrypt(String encryptedText, SecretKey secretKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        byte[] decodedBytes = Base64.getDecoder().decode(encryptedText);
+        byte[] decryptedBytes = cipher.doFinal(decodedBytes);
+        return new String(decryptedBytes);
+    }
+}
+
+
+import java.security.MessageDigest; 
+import java.security.NoSuchAlgorithmException; 
+import java.util.Scanner;   
+public class sha 
+{ 
+    public static String computeSHA256(String input) 
+    { 
+        try 
+        { 
+            MessageDigest digest = MessageDigest.getInstance("SHA-256"); 
+            byte[] hashBytes = digest.digest(input.getBytes()); 
+            StringBuilder hexString = new StringBuilder(); 
+            for (byte b : hashBytes) 
+            { 
+                String hex = Integer.toHexString(0xff & b); 
+                if (hex.length() == 1) 
+                { 
+                    hexString.append('0'); 
+                } 
+                hexString.append(hex); 
+            } 
+            return hexString.toString(); 
+        } 
+        catch (NoSuchAlgorithmException e) 
+        { 
+            throw new RuntimeException(e); 
+        } 
+    } 
+  
+    public static void main(String[] args) 
+    { 
+        Scanner scanner = new Scanner(System.in); 
+        System.out.print("Enter a string to hash with SHA-256: "); 
+        String input = scanner.nextLine(); 
+  
+        String sha256Hash = computeSHA256(input); 
+        System.out.println("SHA-256 Hash: " + sha256Hash); 
+  
+        scanner.close(); 
+    } 
+}
+
+
+import javax.crypto.Cipher;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.Base64;
+
+public class SimpleRSA {
+    public static void main(String[] args) throws Exception {
+        String message = "Hello, RSA!";
+
+        // Generate RSA key pair
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+        keyGen.initialize(2048); // key size of 2048 bits
+        KeyPair keyPair = keyGen.generateKeyPair();
+        PublicKey publicKey = keyPair.getPublic();
+        PrivateKey privateKey = keyPair.getPrivate();
+
+        // Encrypt the message
+        String encryptedMessage = encrypt(message, publicKey);
+        System.out.println("Encrypted Message: " + encryptedMessage);
+
+        // Decrypt the message
+        String decryptedMessage = decrypt(encryptedMessage, privateKey);
+        System.out.println("Decrypted Message: " + decryptedMessage);
+    }
+
+    // RSA Encryption
+    public static String encrypt(String message, PublicKey publicKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encryptedBytes = cipher.doFinal(message.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
+
+    // RSA Decryption
+    public static String decrypt(String encryptedMessage, PrivateKey privateKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedMessage));
+        return new String(decryptedBytes);
+    }
+}
